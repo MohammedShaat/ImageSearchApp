@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Image Search App</string>
+    <string name="content_description_image">image related to searching</string>
+    <string name="content_description_username_icon">username icon</string>
+    <string name="text_view_text_error">Results couldn\'t be loaded</string>
+    <string name="button_text_retry">Retry</string>
+    <string name="text_view_text_empty">No results found for this query</string>
 </resources>
