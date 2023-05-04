@@ -1,17 +1,20 @@
 package com.codinginflow.imagesearchapp.ui.gallery
 
 import android.os.Bundle
-import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.codinginflow.imagesearchapp.R
 import com.codinginflow.imagesearchapp.databinding.FragmentGalleryBinding
+import com.codinginflow.imagesearchapp.util.onSubmit
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 private const val TAG = "GalleryFragment"
 
@@ -44,12 +47,28 @@ class GalleryFragment : Fragment(R.layout.fragment_gallery) {
 //            Log.i(TAG, "onViewCreated: $photoPagingData")
             photoAdapter.submitData(viewLifecycleOwner.lifecycle, photoPagingData)
         }
+
+        setHasOptionsMenu(true)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_fragment_gallery, menu)
+
+        val itemSearch = menu.findItem(R.id.action_search)
+        val viewSearch = itemSearch.actionView as SearchView
+
+        viewSearch.onSubmit { query ->
+            viewModel.onSearchActionSubmit(query)
+            viewSearch.clearFocus()
+            binding.recyclerViewImagesList.scrollToPosition(0)
+        }
+    }
+
 }
 
 fun <T> Fragment.onCollect(flow: Flow<T>, block: suspend (T) -> Unit) {

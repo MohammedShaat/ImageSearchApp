@@ -8,7 +8,6 @@ import com.codinginflow.imagesearchapp.data.UnsplashRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -28,5 +27,9 @@ class GalleryViewModel @ViewModelInject constructor(
 
     fun searchPhotos(query: String) {
         currentQuery.value = query
+    }
+
+    fun onSearchActionSubmit(query: String) {
+        searchPhotos(query)
     }
 }
