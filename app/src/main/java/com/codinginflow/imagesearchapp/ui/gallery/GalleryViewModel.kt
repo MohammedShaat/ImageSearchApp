@@ -4,10 +4,11 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
+import com.codinginflow.imagesearchapp.data.UnsplashPhoto
 import com.codinginflow.imagesearchapp.data.UnsplashRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -20,10 +21,12 @@ class GalleryViewModel @ViewModelInject constructor(
     }
 
     private val currentQuery = MutableStateFlow(DEFAULT_QUERY)
-
     val photos = currentQuery.flatMapLatest {
         repository.getSearchPhotos(it).cachedIn(viewModelScope)
     }
+
+    private val _photoSharedFlow = MutableSharedFlow<UnsplashPhoto>()
+    val photoSharedFlow = _photoSharedFlow.asSharedFlow()
 
     fun searchPhotos(query: String) {
         currentQuery.value = query
@@ -31,5 +34,9 @@ class GalleryViewModel @ViewModelInject constructor(
 
     fun onSearchActionSubmit(query: String) {
         searchPhotos(query)
+    }
+
+    fun onPhotoClick(photo: UnsplashPhoto) = viewModelScope.launch {
+        _photoSharedFlow.emit(photo)
     }
 }

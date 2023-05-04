@@ -72,6 +72,8 @@ dependencies {
 
     // Paging 3
     implementation "androidx.paging:paging-runtime:$pagingVersion"
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
 }
 
 kapt {

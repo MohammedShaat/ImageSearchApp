@@ -14,7 +14,7 @@ import com.codinginflow.imagesearchapp.R
 import com.codinginflow.imagesearchapp.data.UnsplashPhoto
 import com.codinginflow.imagesearchapp.databinding.ItemUnsplashPhotoBinding
 
-class UnsplashPhotoAdapter :
+class UnsplashPhotoAdapter(private val onItemClickListener: OnItemClickListener) :
     PagingDataAdapter<UnsplashPhoto, UnsplashPhotoAdapter.PhotoViewHolder>(PhotoDiffCallback()) {
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
@@ -27,15 +27,29 @@ class UnsplashPhotoAdapter :
         return PhotoViewHolder(binding)
     }
 
-    class PhotoViewHolder(private val binding: ItemUnsplashPhotoBinding) :
+    inner class PhotoViewHolder(private val binding: ItemUnsplashPhotoBinding) :
         ViewHolder(binding.root) {
+
+        init {
+            itemView.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val photo = getItem(position) ?: return@setOnClickListener
+                    onItemClickListener.onItemClick(photo)
+                }
+            }
+        }
+
         fun bind(photo: UnsplashPhoto) {
             binding.apply {
                 Glide.with(itemView)
                     .load(photo.urls.regular)
                     .centerCrop()
                     .transition(DrawableTransitionOptions.withCrossFade())
-                    .apply(RequestOptions().placeholder(R.drawable.loading_animation).error(R.drawable.ic_error))
+                    .apply(
+                        RequestOptions().placeholder(R.drawable.loading_animation)
+                            .error(R.drawable.ic_error)
+                    )
                     .into(image)
 
                 textViewUserName.text = photo.user.name
@@ -53,4 +67,7 @@ class UnsplashPhotoAdapter :
         }
     }
 
+    interface OnItemClickListener {
+        fun onItemClick(photo: UnsplashPhoto)
+    }
 }

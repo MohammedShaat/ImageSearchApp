@@ -9,9 +9,11 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.paging.LoadType
 import com.codinginflow.imagesearchapp.R
+import com.codinginflow.imagesearchapp.data.UnsplashPhoto
 import com.codinginflow.imagesearchapp.databinding.FragmentGalleryBinding
 import com.codinginflow.imagesearchapp.util.onSubmit
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,7 +23,8 @@ import kotlinx.coroutines.flow.collect
 private const val TAG = "GalleryFragment"
 
 @AndroidEntryPoint
-class GalleryFragment : Fragment(R.layout.fragment_gallery) {
+class GalleryFragment : Fragment(R.layout.fragment_gallery),
+    UnsplashPhotoAdapter.OnItemClickListener {
 
     private val viewModel: GalleryViewModel by viewModels()
 
@@ -33,7 +36,7 @@ class GalleryFragment : Fragment(R.layout.fragment_gallery) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentGalleryBinding.bind(view)
-        val photoAdapter = UnsplashPhotoAdapter()
+        val photoAdapter = UnsplashPhotoAdapter(this)
 
         binding.apply {
             recyclerViewImagesList.apply {
@@ -67,6 +70,11 @@ class GalleryFragment : Fragment(R.layout.fragment_gallery) {
             }
         }
 
+        onCollect(viewModel.photoSharedFlow) { photo ->
+            val action = GalleryFragmentDirections.actionGalleryFragmentToDetailsFragment(photo)
+            findNavController().navigate(action)
+        }
+
         setHasOptionsMenu(true)
     }
 
@@ -86,6 +94,10 @@ class GalleryFragment : Fragment(R.layout.fragment_gallery) {
             viewSearch.clearFocus()
             binding.recyclerViewImagesList.scrollToPosition(0)
         }
+    }
+
+    override fun onItemClick(photo: UnsplashPhoto) {
+        viewModel.onPhotoClick(photo)
     }
 
 }
