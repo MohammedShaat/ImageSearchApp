@@ -3,12 +3,14 @@ package com.codinginflow.imagesearchapp.ui.gallery
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
+import androidx.paging.LoadType
 import com.codinginflow.imagesearchapp.R
 import com.codinginflow.imagesearchapp.databinding.FragmentGalleryBinding
 import com.codinginflow.imagesearchapp.util.onSubmit
@@ -41,11 +43,28 @@ class GalleryFragment : Fragment(R.layout.fragment_gallery) {
                     footer = UnsplashPhotoLoadStateAdapter { photoAdapter.retry() }
                 )
             }
+
+            buttonRetry.setOnClickListener {
+                photoAdapter.retry()
+            }
         }
 
         onCollect(viewModel.photos) { photoPagingData ->
 //            Log.i(TAG, "onViewCreated: $photoPagingData")
             photoAdapter.submitData(viewLifecycleOwner.lifecycle, photoPagingData)
+        }
+
+        photoAdapter.addLoadStateListener { loadState ->
+            binding.apply {
+                val refresh = loadState.source.refresh
+                recyclerViewImagesList.isVisible = refresh is LoadState.NotLoading
+                progressBar.isVisible = refresh is LoadState.Loading
+                textViewError.isVisible = refresh is LoadState.Error
+                buttonRetry.isVisible = refresh is LoadState.Error
+                textViewEmpty.isVisible = refresh is LoadState.NotLoading &&
+                        photoAdapter.itemCount < 1 &&
+                        loadState.append.endOfPaginationReached
+            }
         }
 
         setHasOptionsMenu(true)
