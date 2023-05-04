@@ -33,7 +33,10 @@ class GalleryFragment : Fragment(R.layout.fragment_gallery) {
         binding.apply {
             recyclerViewImagesList.apply {
                 setHasFixedSize(true)
-                adapter = photoAdapter
+                adapter = photoAdapter.withLoadStateHeaderAndFooter(
+                    header = UnsplashPhotoLoadStateAdapter { photoAdapter.retry() },
+                    footer = UnsplashPhotoLoadStateAdapter { photoAdapter.retry() }
+                )
             }
         }
 

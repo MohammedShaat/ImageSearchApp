@@ -5,4 +5,6 @@
     <string name="text_view_text_error">Results couldn\'t be loaded</string>
     <string name="button_text_retry">Retry</string>
     <string name="text_view_text_empty">No results found for this query</string>
+    <string name="text_view_text_error_load_state">Results could not be loaded</string>
+    <string name="button_text_retry_load_state">Retry</string>
 </resources>
