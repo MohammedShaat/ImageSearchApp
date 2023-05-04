@@ -8,4 +8,5 @@
     <string name="text_view_text_error_load_state">Results could not be loaded</string>
     <string name="button_text_retry_load_state">Retry</string>
     <string name="item_title_search">Search</string>
+    <string name="text_view_text_creator">Photo by %s on Unsplash</string>
 </resources>
