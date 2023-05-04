@@ -1,6 +1,7 @@
 package com.codinginflow.imagesearchapp.ui.gallery
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
@@ -11,7 +12,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
-import androidx.paging.LoadType
 import com.codinginflow.imagesearchapp.R
 import com.codinginflow.imagesearchapp.data.UnsplashPhoto
 import com.codinginflow.imagesearchapp.databinding.FragmentGalleryBinding
@@ -52,8 +52,7 @@ class GalleryFragment : Fragment(R.layout.fragment_gallery),
             }
         }
 
-        onCollect(viewModel.photos) { photoPagingData ->
-//            Log.i(TAG, "onViewCreated: $photoPagingData")
+        viewModel.photos.observe(viewLifecycleOwner) { photoPagingData ->
             photoAdapter.submitData(viewLifecycleOwner.lifecycle, photoPagingData)
         }
 
@@ -87,11 +86,11 @@ class GalleryFragment : Fragment(R.layout.fragment_gallery),
         inflater.inflate(R.menu.menu_fragment_gallery, menu)
 
         val itemSearch = menu.findItem(R.id.action_search)
-        val viewSearch = itemSearch.actionView as SearchView
+        val searchView = itemSearch.actionView as SearchView
 
-        viewSearch.onSubmit { query ->
+        searchView.onSubmit { query ->
             viewModel.onSearchActionSubmit(query)
-            viewSearch.clearFocus()
+            searchView.clearFocus()
             binding.recyclerViewImagesList.scrollToPosition(0)
         }
     }

@@ -19,5 +19,5 @@ class UnsplashRepository @Inject constructor(
                 enablePlaceholders = false
             ),
             pagingSourceFactory = { UnsplashPagingSource(unsplashApi, query) }
-        ).flow
+        ).liveData
 }

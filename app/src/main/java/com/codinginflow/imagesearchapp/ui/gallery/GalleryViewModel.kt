@@ -1,8 +1,8 @@
 package com.codinginflow.imagesearchapp.ui.gallery
 
+import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.cachedIn
 import com.codinginflow.imagesearchapp.data.UnsplashPhoto
 import com.codinginflow.imagesearchapp.data.UnsplashRepository
@@ -13,15 +13,19 @@ import kotlinx.coroutines.launch
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalCoroutinesApi::class)
 class GalleryViewModel @ViewModelInject constructor(
-    private val repository : UnsplashRepository
+    private val repository : UnsplashRepository,
+    @Assisted private val state: SavedStateHandle
 ) : ViewModel() {
 
     companion object {
-        private const val DEFAULT_QUERY = "cats"
+        const val DEFAULT_QUERY = "cats"
     }
 
-    private val currentQuery = MutableStateFlow(DEFAULT_QUERY)
-    val photos = currentQuery.flatMapLatest {
+    private val _currentQuery = state.getLiveData("query", DEFAULT_QUERY)
+    val currentQuery: LiveData<String>
+        get() = _currentQuery
+
+    val photos = _currentQuery.switchMap {
         repository.getSearchPhotos(it).cachedIn(viewModelScope)
     }
 
@@ -29,7 +33,7 @@ class GalleryViewModel @ViewModelInject constructor(
     val photoSharedFlow = _photoSharedFlow.asSharedFlow()
 
     fun searchPhotos(query: String) {
-        currentQuery.value = query
+        _currentQuery.value = query
     }
 
     fun onSearchActionSubmit(query: String) {
